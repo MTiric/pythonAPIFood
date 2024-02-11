@@ -28,11 +28,9 @@ def get_user_by_id(user_data, user_id):
     return None
 
 
-def save_to_file(data):
-    # Specify the file path where you want to save the data
-    file_path = "food_data.json"
+def save_to_file(data, user_path):
+    file_path = user_path + "food_data.json"
 
-    # Open the file in append mode and write the data
     with open(file_path, 'w') as file:
         json.dump(data, file)
-        file.write('\n')  # Add a new line for each entry
+        file.write('\n')
