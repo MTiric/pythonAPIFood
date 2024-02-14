@@ -4,6 +4,7 @@ from flask import Flask, request, jsonify
 import methods
 import authMethods
 import mailSend
+import client
 from simpleUserData import user_data
 
 app = Flask(__name__)
@@ -12,7 +13,10 @@ app = Flask(__name__)
 @app.route("/get-time-difference/<string:date>/<string:time>")
 def get_time_difference(date, time):
     try:
-        time_difference = methods.calculate_time_difference_in_minutes(date, time)
+        datetime_string = f"'{date}', '{time}'"
+        print(f"Original datetime string: {datetime_string}")
+
+        time_difference = client.send_time(datetime_string)
         # time_difference_string = str(time_difference)
         return f"{time_difference}", 200
     except:
@@ -34,6 +38,7 @@ def get_token():
 def get_hello_world():
     test = int(request.args.get('value1', 0))
     test2 = int(request.args.get('value2', 0))
+    client.sendMessage()
     return "Hello world!" + str(test + test2), 200
 
 
@@ -111,13 +116,17 @@ def register():
     password = json_object['password']
     salt = json_object['salt']
     confirmed_mail = False
+    nickname = json_object['nickname']
+    height = json_object['height']
+    weight = json_object['weight']
+    age = json_object['age']
 
     users = authMethods.load_Users()
 
     if username in users:
         return jsonify({'error': 'Username already exists'}), 400
 
-    users[username] = password, salt, confirmed_mail
+    users[username] = password, salt, confirmed_mail, nickname, height, weight, age
     print(users[username])
     authMethods.save_users(users)
 
