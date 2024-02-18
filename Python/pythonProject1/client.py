@@ -1,7 +1,7 @@
 import socket
 import threading
 
-HOST = "192.168.1.6"
+HOST = "192.168.1.4"
 PORT = 65432
 HEADERSIZE = 10
 

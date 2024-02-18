@@ -70,14 +70,13 @@ def create_food_data(unique_user_token, user):
     return jsonify({'error': 'Unauthorized access.'}), 400
 
 
-
 @app.route("/getUserToken/<string:user>")
-def get_user_salt(user):
+def get_user_token(user):
     users = authMethods.load_Users()
 
     if user in users:
-        salt = users[user][1]
-        return salt
+        token = users[user][1]
+        return token
 
 
 @app.route("/signIn", methods=["POST", "GET"])
@@ -95,13 +94,20 @@ def signIn():
     users = authMethods.load_Users()
 
     if username not in users:
-        return jsonify({'authorized': False, 'error': 'Incorrect username or password'}), 400
+        return jsonify({'authorized': False, 'error': 'Incorrect username or password1'}), 400
 
     if username in users:
         if users[username][0] == password:
-            return jsonify({'authorized': True, 'message': 'Login successful!'}), 201
+            print(users[username])
+            return jsonify({
+                'authorized': True,
+                'nickname': users[username][3],
+                'height': users[username][4],
+                'weight': users[username][5],
+                'age': users[username][6],
+                'message': 'Login successful!'}), 201
 
-    return jsonify({'authorized': False, 'error': 'Incorrect username or password'}), 400
+    return jsonify({'authorized': False, 'error': 'Incorrect username or password2'}), 400
 
 
 @app.route('/register', methods=["POST", "GET"])
@@ -114,7 +120,7 @@ def register():
 
     username = json_object['username']
     password = json_object['password']
-    salt = json_object['salt']
+    token = json_object['token']
     confirmed_mail = False
     nickname = json_object['nickname']
     height = json_object['height']
@@ -126,11 +132,11 @@ def register():
     if username in users:
         return jsonify({'error': 'Username already exists'}), 400
 
-    users[username] = password, salt, confirmed_mail, nickname, height, weight, age
+    users[username] = password, token, confirmed_mail, nickname, height, weight, age
     print(users[username])
     authMethods.save_users(users)
 
-    mailSend.sendMail(username, salt)
+    mailSend.sendMail(username, token)
     return jsonify({'message': 'User registered successfully, confirmation mail sent'}), 201
 
 
